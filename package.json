@@ -1,6 +1,6 @@
 {
   "name": "create-danver-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Go, React 프로젝트 생성 툴",
   "main": "index.js",
   "scripts": {
