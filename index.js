@@ -32,6 +32,14 @@ async function createProject(templateName, projectName) {
       },
     });
 
+    // package.json 파일의 name 필드 업데이트
+    if (templateName === "react-template") {
+      const packageJsonPath = path.join(targetPath, "package.json");
+      const packageJson = await fs.readJson(packageJsonPath);
+      packageJson.name = projectName;
+      await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+    }
+
     console.log(
       `'${projectName}' 디렉토리에 ${templateName} 템플릿을 생성했습니다!`
     );
