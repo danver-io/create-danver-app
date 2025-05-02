@@ -24,24 +24,31 @@ type IResponse struct {
 	Success bool       `json:"success"`
 }
 
-func handleGetUsers(c *gin.Context) {
-	response := IResponse{
-		Data:    []IUser{},
-		Status:  http.StatusOK,
+// Response helpers
+func successResponse(c *gin.Context, status int, data interface{}) {
+	c.JSON(status, IResponse{
+		Data:    data,
+		Status:  status,
 		Success: true,
-	}
-	c.JSON(http.StatusOK, response)
+	})
+}
+
+func errorResponse(c *gin.Context, status int, err string) {
+	c.JSON(status, IResponse{
+		Status:  status,
+		Error:   err,
+		Success: false,
+	})
+}
+
+func handleGetUsers(c *gin.Context) {
+	successResponse(c, http.StatusOK, []IUser{})
 }
 
 func handleCreateUser(c *gin.Context) {
 	var user IUser
 	if err := c.ShouldBindJSON(&user); err != nil {
-		response := IResponse{
-			Status:  http.StatusBadRequest,
-			Error:   "Invalid request body",
-			Success: false,
-		}
-		c.JSON(http.StatusBadRequest, response)
+		errorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
@@ -49,58 +56,34 @@ func handleCreateUser(c *gin.Context) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	response := IResponse{
-		Data:    user,
-		Status:  http.StatusCreated,
-		Success: true,
-	}
-	c.JSON(http.StatusCreated, response)
+	successResponse(c, http.StatusCreated, user)
 }
 
 func handleGetUser(c *gin.Context) {
 	id := c.Param("id")
-	response := IResponse{
-		Data: IUser{
-			ID:        id,
-			Name:      "John Doe",
-			Email:     "john@example.com",
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-		Status:  http.StatusOK,
-		Success: true,
-	}
-	c.JSON(http.StatusOK, response)
+	successResponse(c, http.StatusOK, IUser{
+		ID:        id,
+		Name:      "John Doe",
+		Email:     "john@example.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
 }
 
 func handleUpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	var user IUser
 	if err := c.ShouldBindJSON(&user); err != nil {
-		response := IResponse{
-			Status:  http.StatusBadRequest,
-			Error:   "Invalid request body",
-			Success: false,
-		}
-		c.JSON(http.StatusBadRequest, response)
+		errorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	user.ID = id
 	user.UpdatedAt = time.Now()
 
-	response := IResponse{
-		Data:    user,
-		Status:  http.StatusOK,
-		Success: true,
-	}
-	c.JSON(http.StatusOK, response)
+	successResponse(c, http.StatusOK, user)
 }
 
 func handleDeleteUser(c *gin.Context) {
-	response := IResponse{
-		Status:  http.StatusOK,
-		Success: true,
-	}
-	c.JSON(http.StatusOK, response)
+	successResponse(c, http.StatusOK, nil)
 } 
