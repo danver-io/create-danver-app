@@ -25,8 +25,12 @@ async function createProject(templateName, projectName) {
       process.exit(1);
     }
 
-    // 템플릿을 대상 경로로 복사
-    await fs.copy(templatePath, targetPath);
+    // 템플릿을 대상 경로로 복사 (node_modules 제외)
+    await fs.copy(templatePath, targetPath, {
+      filter: (src) => {
+        return !src.includes("node_modules");
+      },
+    });
 
     console.log(
       `'${projectName}' 디렉토리에 ${templateName} 템플릿을 생성했습니다!`
